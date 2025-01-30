@@ -1,10 +1,10 @@
-// src/NetworkManager.cpp
 #include "NetworkManager.h"
 #include "SpikeEvent.h"
 #include "INeuron.h"
 #include "ISynapse.h"
 #include <iostream>
 
+// Implementación de runSimulation
 void NetworkManager::runSimulation(double tMax, double dt) {
     double currentTime = 0.0;
     int steps = static_cast<int>(tMax / dt);

@@ -1,56 +1,40 @@
-// src/main.cpp
-#include <iostream>
-#include "LIFNeuron.h"
-#include "IzhikevichNeuron.h"
-#include "ExcitatorySynapse.h"
-#include "InhibitorySynapse.h"
 #include "NetworkManager.h"
+#include "RandomConnectivityStrategy.h"
+// Incluye otras estrategias según sea necesario
+
+#include <iostream>
 
 int main() {
     NetworkManager manager;
 
-    // Crear neuronas usando el factory
-    auto lifNeuron1 = manager.createNeuron(NeuronType::LIF);
-    auto lifNeuron2 = manager.createNeuron(NeuronType::LIF, {-65.0, -70.0, -55.0, 10.0, 1.0});
-
-    auto izhiNeuron1 = manager.createNeuron(NeuronType::Izhikevich);
-    auto izhiNeuron2 = manager.createNeuron(NeuronType::Izhikevich, {0.02, 0.2, -65.0, 8.0, -70.0, 0.0});
-
-    // Conectar neuronas LIF entre sí
-    manager.connectExcitatory(lifNeuron1, lifNeuron2, 1.0);  // Peso inicial bajo para observar cambios
-
-    // Conectar neuronas Izhikevich entre sí
-    manager.connectExcitatory(izhiNeuron1, izhiNeuron2, 1.0); // Peso inicial bajo
-
-    // Conectar LIF a Izhikevich
-    manager.connectExcitatory(lifNeuron1, izhiNeuron1, 1.0); // Peso inicial bajo
-
-    // Conectar Izhikevich a LIF
-    manager.connectExcitatory(izhiNeuron2, lifNeuron1, 1.0); // Peso inicial bajo
-
-    // Conectar LIF a Izhikevich como inhibidora
-    manager.connectInhibitory(lifNeuron2, izhiNeuron1, 1.0); // Peso inicial bajo
-
-    // Conectar Izhikevich a LIF como inhibidora
-    manager.connectInhibitory(izhiNeuron1, lifNeuron2, 1.0); // Peso inicial bajo
-
-    // Inyectar corriente para inducir spikes
-    lifNeuron1->injectCurrent(1015.0); // Forzar spike inmediato
-    izhiNeuron2->injectCurrent(1015.0); // Forzar spike inmediato
-
-    // Ejecutar la simulación durante 50 ms con un paso de tiempo de 0.1 ms
-    manager.runSimulation(50.0, 0.1);
-
-    // Imprimir los pesos finales de las sinapsis excitatorias
-    std::cout << "Pesos finales de las sinapsis excitatorias:" << std::endl;
-    for (auto &synapse : manager.getSynapses()) {
-        auto excitatory = std::dynamic_pointer_cast<ExcitatorySynapse>(synapse);
-        if (excitatory) {
-            std::cout << "Sinapsis de Neuron " << excitatory->getPreNeuronID()
-                      << " a Neuron " << excitatory->getPostNeuronID()
-                      << " : Peso = " << excitatory->getWeight() << std::endl;
-        }
+    // Crear 100 neuronas Izhikevich con parámetros por defecto
+    for (int i = 0; i < 100; ++i) {
+        manager.createNeuron(NeuronType::Izhikevich, {0.02, 0.2, -65.0, 8.0, 30.0, -65.0});
     }
+
+    // Crear y asignar una estrategia de conectividad aleatoria
+    double p = 0.1; // Probabilidad de conexión
+    double weight = 0.5; // Peso de las sinapsis
+    bool excitatory = true; // Tipo de sinapsis
+
+    auto randomStrategy = std::make_unique<RandomConnectivityStrategy>(p, weight, excitatory);
+    manager.setConnectivityStrategy(std::move(randomStrategy));
+
+    // Aplicar la estrategia de conectividad para conectar las neuronas
+    try {
+        manager.applyConnectivityStrategy();
+        std::cout << "Conectividad aplicada exitosamente.\n";
+    } catch (const std::exception& e) {
+        std::cerr << "Error al aplicar conectividad: " << e.what() << "\n";
+        return EXIT_FAILURE;
+    }
+
+    // Ejecutar la simulación (ejemplo: 1000 ms con pasos de 1 ms)
+    double tMax = 1000.0; // Tiempo máximo en ms
+    double dt = 1.0;       // Paso de tiempo en ms
+
+    manager.runSimulation(tMax, dt);
+    std::cout << "Simulacion completada.\n";
 
     return 0;
 }

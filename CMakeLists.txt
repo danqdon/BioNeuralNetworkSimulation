@@ -17,6 +17,7 @@ add_library(NeuralSimulationLib
         src/InhibitorySynapse.cpp
         src/IzhikevichNeuron.cpp
         src/NetworkManager.cpp
+        src/RandomConnectivityStrategy.cpp  # Añadir implementación de estrategia concreta
 )
 
 # Directorios de inclusión para la biblioteca
