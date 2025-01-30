@@ -1,0 +1,61 @@
+# Ignore build directories
+cmake-build-*/
+
+# Ignore CMake generated files
+CMakeCache.txt
+CMakeFiles/
+CMakeLists.txt.user
+CMakeLists.txt.user.*
+
+# Ignore compiled binaries and object files
+*.o
+*.obj
+*.so
+*.dylib
+*.dll
+*.a
+*.lib
+*.exe
+*.out
+*.app
+
+# Ignore logs and debugging files
+*.log
+*.DS_Store
+*.directory
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Ignore Python virtual environments (if used for scripts)
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore GoogleTest CMake build artifacts
+_deps/
+googletest-build/
+googletest-download/
+
+# Ignore generated documentation (Doxygen)
+docs/html/
+docs/latex/
+
+# Ignore test results
+Testing/
+CTestTestfile.cmake
+DartConfiguration.tcl
+
+# Ignore CLion run configurations and temporary files
+*.iml
+*.ipr
+*.iws
+*.clion.log
+*.cmake-format
+
+# Ignore custom configuration files (if any)
+.env
+.local

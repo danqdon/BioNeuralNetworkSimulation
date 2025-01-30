@@ -16,14 +16,15 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 # Hacer que GoogleTest esté disponible para el proyecto
 FetchContent_MakeAvailable(googletest)
 
-# Ahora, añade el ejecutable de pruebas con los nuevos archivos de test
+# Añadir el ejecutable de pruebas con los nuevos archivos de test
 add_executable(NeuralSimulationTests
         test_main.cpp
-        test_neuron.cpp
+        test_lif_neuron.cpp
         test_synapse.cpp
         test_event_manager.cpp
         test_network_manager.cpp
         test_stdp.cpp
+        test_izhikevich_neuron.cpp  # **Añadir este archivo**
 )
 
 # Linkear el ejecutable de pruebas contra GoogleTest y la biblioteca principal
