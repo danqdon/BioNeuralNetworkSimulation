@@ -1,4 +1,6 @@
-#include "RandomConnectivityStrategy.h"
+#include "ConnectivityStrategies/RandomConnectivityStrategy.h"
+
+namespace BioNeuralNetwork {
 
 void RandomConnectivityStrategy::connectNeurons(std::vector<std::shared_ptr<INeuron>>& neurons)
 {
@@ -34,4 +36,5 @@ void RandomConnectivityStrategy::connectNeurons(std::vector<std::shared_ptr<INeu
             }
         }
     }
+}
 }

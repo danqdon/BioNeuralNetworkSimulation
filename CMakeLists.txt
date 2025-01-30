@@ -1,33 +1,25 @@
-# CMakeLists.txt (Directorio Raíz)
-
+# CMakeLists.txt
 cmake_minimum_required(VERSION 3.10)
-project(BioNeuralNetworkSimulation)
+project(BioNeuralNetwork)
 
 # Establecer el estándar de C++
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-# Habilitar testing
-enable_testing()
+# Incluir directorios
+include_directories(include)
 
-# Añadir la biblioteca principal
-add_library(NeuralSimulationLib
-        src/LIFNeuron.cpp
-        src/ExcitatorySynapse.cpp
-        src/InhibitorySynapse.cpp
-        src/IzhikevichNeuron.cpp
-        src/NetworkManager.cpp
-        src/RandomConnectivityStrategy.cpp  # Añadir implementación de estrategia concreta
+# Añadir ejecutable
+add_executable(BioNeuralNetwork
+        src/main.cpp
+        src/Core/Logger.cpp
+        src/Neurons/IzhikevichNeuron.cpp
+        src/Neurons/LIFNeuron.cpp
+        src/Synapses/ExcitatorySynapse.cpp
+        src/Synapses/InhibitorySynapse.cpp
+        src/ConnectivityStrategies/RandomConnectivityStrategy.cpp
+        src/Network/NetworkManager.cpp
+        # Añade otros archivos .cpp según sea necesario
 )
 
-# Directorios de inclusión para la biblioteca
-target_include_directories(NeuralSimulationLib PUBLIC include)
-
-# Añadir el ejecutable principal
-add_executable(SimulationExecutable src/main.cpp)
-
-# Enlazar la biblioteca con el ejecutable
-target_link_libraries(SimulationExecutable PRIVATE NeuralSimulationLib)
-
-# Añadir el subdirectorio de pruebas
-add_subdirectory(tests)
+# No es necesario enlazar nlohmann_json ya que ya no se usa

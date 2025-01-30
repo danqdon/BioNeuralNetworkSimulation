@@ -19,12 +19,12 @@ FetchContent_MakeAvailable(googletest)
 # Añadir el ejecutable de pruebas con los nuevos archivos de test
 add_executable(NeuralSimulationTests
         test_main.cpp
-        test_lif_neuron.cpp
-        test_synapse.cpp
-        test_event_manager.cpp
-        test_network_manager.cpp
+        Neurons/test_lif_neuron.cpp
+        Synapses/test_synapse.cpp
+        Core/test_event_manager.cpp
+        Network/test_network_manager.cpp
         test_stdp.cpp
-        test_izhikevich_neuron.cpp  # **Añadir este archivo**
+        Neurons/test_izhikevich_neuron.cpp  # **Añadir este archivo**
 )
 
 # Linkear el ejecutable de pruebas contra GoogleTest y la biblioteca principal
