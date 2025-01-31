@@ -1,34 +1,22 @@
+// RandomConnectivityStrategy.cpp
 #include "ConnectivityStrategies/RandomConnectivityStrategy.h"
-#include "Core/INeuron.h"
 #include "Network/NetworkManager.h"
+#include <cmath>
 
 namespace BioNeuralNetwork {
 
-    RandomConnectivityStrategy::RandomConnectivityStrategy(double p,
-                                                           double weight,
-                                                           bool isExcitatory)
-        : connectionProbability(p),
-          defaultWeight(weight),
-          excitatory(isExcitatory),
-          gen(rd()),
-          dist(0.0, 1.0)
-    {
-    }
+    void RandomConnectivityStrategy::connectNeurons(std::vector<std::shared_ptr<INeuron>>& neurons, NetworkManager& manager) {
+        int numNeurons = static_cast<int>(neurons.size());
 
-    void RandomConnectivityStrategy::connectNeurons(std::vector<std::shared_ptr<INeuron>>& neurons,
-                                                    NetworkManager& manager)
-    {
-        size_t numNeurons = neurons.size();
-        for (size_t i = 0; i < numNeurons; ++i) {
-            for (size_t j = 0; j < numNeurons; ++j) {
+        for (int i = 0; i < numNeurons; ++i) {
+            for (int j = 0; j < numNeurons; ++j) {
                 if (i == j) continue; // Evitar auto-conexiones
-
-                double randVal = dist(gen);
-                if (randVal < connectionProbability) {
-                    if (excitatory) {
-                        manager.connectExcitatory(neurons[i], neurons[j], defaultWeight);
+                double randProb = dist(gen);
+                if (randProb < p_connection) {
+                    if (isExcitatory) {
+                        manager.connectExcitatory(neurons[i], neurons[j], weight);
                     } else {
-                        manager.connectInhibitory(neurons[i], neurons[j], defaultWeight);
+                        manager.connectInhibitory(neurons[i], neurons[j], weight);
                     }
                 }
             }

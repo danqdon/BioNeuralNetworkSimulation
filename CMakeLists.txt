@@ -1,4 +1,3 @@
-# CMakeLists.txt
 cmake_minimum_required(VERSION 3.10)
 project(BioNeuralNetwork)
 
@@ -8,6 +7,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Incluir directorios
 include_directories(include)
+include_directories(include/ConnectivityStrategies) # Asegúrate de que las cabeceras están en subdirectorios
+include_directories(include/Core)
+include_directories(include/Neurons)
+include_directories(include/Synapses)
+include_directories(include/Network)
 
 # Añadir ejecutable
 add_executable(BioNeuralNetwork
@@ -18,8 +22,13 @@ add_executable(BioNeuralNetwork
         src/Synapses/ExcitatorySynapse.cpp
         src/Synapses/InhibitorySynapse.cpp
         src/ConnectivityStrategies/RandomConnectivityStrategy.cpp
+        src/ConnectivityStrategies/SmallWorldConnectivityStrategy.cpp      # <-- Añadido
+        src/ConnectivityStrategies/ScaleFreeConnectivityStrategy.cpp       # <-- Añadido
         src/Network/NetworkManager.cpp
         # Añade otros archivos .cpp según sea necesario
 )
 
-# No es necesario enlazar nlohmann_json ya que ya no se usa
+# Opcional: Si utilizas Threads u otras librerías, puedes enlazarlas aquí
+# Por ejemplo, para Threads:
+# find_package(Threads REQUIRED)
+# target_link_libraries(BioNeuralNetwork PRIVATE Threads::Threads)

@@ -1,60 +1,72 @@
+// NetworkManager.h
 #ifndef NETWORKMANAGER_H
 #define NETWORKMANAGER_H
 
 #include <vector>
 #include <memory>
+#include <string>
 #include "Core/INeuron.h"
 #include "Core/ISynapse.h"
-#include "ConnectivityStrategies/IConnectivityStrategy.h"
 #include "Core/SpikeEvent.h"
 #include "Core/EventManager.h"
+#include "Core/NetworkConfig.h"
 
 namespace BioNeuralNetwork {
 
-    enum class NeuronType {
-        LIF,
-        Izhikevich
-    };
+// Forward declaration de IConnectivityStrategy
+class IConnectivityStrategy;
 
-    class NetworkManager {
-    public:
-        NetworkManager() = default;
+enum class NeuronType {
+    LIF,
+    Izhikevich
+};
 
-        // Crear neuronas
-        std::shared_ptr<INeuron> createNeuron(NeuronType type, const std::vector<double>& params = {});
+class NetworkManager {
+public:
+    NetworkManager() = default;
 
-        // Conectar neuronas
-        void connectExcitatory(std::shared_ptr<INeuron> pre,
-                               std::shared_ptr<INeuron> post,
-                               double weight = 1.0,
-                               double delay = 1.0);
+    // Crear neuronas individualmente
+    std::shared_ptr<INeuron> createNeuron(NeuronType type, const std::vector<double>& params = {});
 
-        void connectInhibitory(std::shared_ptr<INeuron> pre,
-                               std::shared_ptr<INeuron> post,
-                               double weight = 1.0,
-                               double delay = 1.0);
+    // Conectar neuronas individualmente
+    void connectExcitatory(std::shared_ptr<INeuron> pre,
+                           std::shared_ptr<INeuron> post,
+                           double weight = 1.0,
+                           double delay = 1.0);
 
-        void setConnectivityStrategy(std::unique_ptr<IConnectivityStrategy> strategy);
-        void applyConnectivityStrategy();
+    void connectInhibitory(std::shared_ptr<INeuron> pre,
+                           std::shared_ptr<INeuron> post,
+                           double weight = 1.0,
+                           double delay = 1.0);
 
-        void runSimulation(double tMax, double dt);
+    // Establecer y aplicar estrategias de conectividad
+    void setConnectivityStrategy(std::unique_ptr<IConnectivityStrategy> strategy);
+    void applyConnectivityStrategy();
 
-        // <-- ADICIÓN: getter para acceder a las neuronas
-        const std::vector<std::shared_ptr<INeuron>>& getNeurons() const {
-            return neurons;
-        }
+    // Ejecutar simulación
+    void runSimulation(double tMax, double dt);
 
-    private:
-        std::vector<std::shared_ptr<INeuron>> neurons;
-        std::vector<std::shared_ptr<ISynapse>> synapses;
+    // Getter para acceder a las neuronas
+    const std::vector<std::shared_ptr<INeuron>>& getNeurons() const {
+        return neurons;
+    }
 
-        std::unique_ptr<IConnectivityStrategy> connectivityStrategy;
+    // Método de Alto Nivel para Crear la Red
+    void createNetwork(const NetworkConfig& config);
 
-        EventManager eventManager;
+private:
+    std::vector<std::shared_ptr<INeuron>> neurons;
+    std::vector<std::shared_ptr<ISynapse>> synapses;
 
-        void addNeuron(std::shared_ptr<INeuron> neuron);
-        void addSynapse(std::shared_ptr<ISynapse> synapse);
-    };
+    // Puntero a IConnectivityStrategy, usando forward declaration
+    std::unique_ptr<IConnectivityStrategy> connectivityStrategy;
+
+    EventManager eventManager;
+
+    // Métodos privados para agregar neuronas y sinapsis
+    void addNeuron(std::shared_ptr<INeuron> neuron);
+    void addSynapse(std::shared_ptr<ISynapse> synapse);
+};
 
 } // namespace BioNeuralNetwork
 

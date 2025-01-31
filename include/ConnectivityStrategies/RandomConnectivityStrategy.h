@@ -1,44 +1,32 @@
+// RandomConnectivityStrategy.h
 #ifndef RANDOMCONNECTIVITYSTRATEGY_H
 #define RANDOMCONNECTIVITYSTRATEGY_H
 
-#include <random>
-#include <vector>
-#include <memory>
-
 #include "IConnectivityStrategy.h"
-#include "Network/NetworkManager.h"  // Para usar NetworkManager en la firma
+#include <random>
 
 namespace BioNeuralNetwork {
 
     /**
-     * @brief Estrategia que conecta neuronas aleatoriamente con una probabilidad p.
+     * @brief Estrategia de conectividad aleatoria.
      */
     class RandomConnectivityStrategy : public IConnectivityStrategy {
     public:
         /**
-         * @brief Constructor.
-         *
-         * @param p Probabilidad de conexión entre dos neuronas (0 <= p <= 1).
-         * @param weight Peso por defecto de las sinapsis creadas.
-         * @param isExcitatory Indica si las sinapsis son excitatorias (true) o inhibitorias (false).
+         * @param connectionProbability Probabilidad de conexión entre neuronas.
+         * @param defaultWeight Peso por defecto de las sinapsis.
+         * @param excitatory Si es verdadero, las conexiones son excitatorias; de lo contrario, inhibitorias.
          */
-        RandomConnectivityStrategy(double p, double weight, bool isExcitatory = true);
+        RandomConnectivityStrategy(double connectionProbability, double defaultWeight, bool excitatory)
+            : p_connection(connectionProbability), weight(defaultWeight), isExcitatory(excitatory),
+              gen(rd()), dist(0.0, 1.0) {}
 
-        /**
-         * @brief Implementación de la conexión aleatoria.
-         *
-         * @param neurons Vector de neuronas a conectar.
-         * @param manager Referencia al NetworkManager para crear sinapsis.
-         */
-        void connectNeurons(std::vector<std::shared_ptr<INeuron>>& neurons,
-                            NetworkManager& manager) override;
+        void connectNeurons(std::vector<std::shared_ptr<INeuron>>& neurons, NetworkManager& manager) override;
 
     private:
-        double connectionProbability;
-        double defaultWeight;
-        bool excitatory;
-
-        // Generador de números aleatorios
+        double p_connection;
+        double weight;
+        bool isExcitatory;
         std::random_device rd;
         std::mt19937 gen;
         std::uniform_real_distribution<> dist;
