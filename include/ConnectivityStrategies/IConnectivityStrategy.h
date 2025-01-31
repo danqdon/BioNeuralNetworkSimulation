@@ -8,7 +8,6 @@
 
 namespace BioNeuralNetwork {
 
-    // Forward declaration de NetworkManager
     class NetworkManager;
 
     /**
@@ -26,6 +25,6 @@ namespace BioNeuralNetwork {
         virtual void connectNeurons(std::vector<std::shared_ptr<INeuron>>& neurons, NetworkManager& manager) = 0;
     };
 
-} // namespace BioNeuralNetwork
+}
 
 #endif // ICONNECTIVITYSTRATEGY_H

@@ -35,7 +35,6 @@ ExcitatorySynapse::ExcitatorySynapse(std::shared_ptr<INeuron> pre,
 void ExcitatorySynapse::deliverSpikeFromPre(const std::shared_ptr<INeuron>& pre, double eventTime)
 {
     if (pre == pre_neuron) {
-        // Inyectar corriente excitatoria
         post_neuron->injectCurrent(weight);
 
         // STDP
@@ -43,7 +42,7 @@ void ExcitatorySynapse::deliverSpikeFromPre(const std::shared_ptr<INeuron>& pre,
         double postTime = post_neuron->getLastSpikeTime();
         double delta_t = postTime - preTime;
 
-        adjustWeight(delta_t, eventTime); // Pasar eventTime
+        adjustWeight(delta_t, eventTime);
     }
 }
 
@@ -55,17 +54,17 @@ void ExcitatorySynapse::deliverSpikeFromPost(const std::shared_ptr<INeuron>& pos
         double postTime = post_neuron->getLastSpikeTime();
         double delta_t = postTime - preTime;
 
-        adjustWeight(delta_t, eventTime); // Pasar eventTime
+        adjustWeight(delta_t, eventTime);
     }
 }
 
-void ExcitatorySynapse::adjustWeight(double delta_t, double eventTime) // Añadido eventTime
+void ExcitatorySynapse::adjustWeight(double delta_t, double eventTime)
 {
     if (std::isnan(delta_t)) {
-        return; // Evitar problemas si no hay spikes previos
+        return;
     }
 
-    double oldWeight = weight; // Guardar el peso antes del ajuste
+    double oldWeight = weight;
 
     if (delta_t > 0) {
         // LTP
@@ -76,7 +75,6 @@ void ExcitatorySynapse::adjustWeight(double delta_t, double eventTime) // Añadi
         weight += A_minus * std::exp(delta_t / tau_minus);
     }
 
-    // Aplicar límites al peso
     if (weight < min_weight) {
         weight = min_weight;
     }
@@ -84,12 +82,11 @@ void ExcitatorySynapse::adjustWeight(double delta_t, double eventTime) // Añadi
         weight = max_weight;
     }
 
-    // Registrar el cambio de peso si hubo modificación significativa
-    if (std::abs(weight - oldWeight) > 1e-6) { // Evitar registros innecesarios
+    if (std::abs(weight - oldWeight) > 1e-6) {
         std::ostringstream synID;
         synID << pre_neuron->getID() << "_" << post_neuron->getID();
         Logger::getInstance().logWeightChange(synID.str(), eventTime, oldWeight, weight);
     }
 }
 
-} // namespace BioNeuralNetwork
+}

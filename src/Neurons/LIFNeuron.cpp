@@ -5,10 +5,9 @@
 
 namespace BioNeuralNetwork {
 
-// Definición de la variable estática
+
 int LIFNeuron::id_counter = 0;
 
-// Implementación del constructor
 LIFNeuron::LIFNeuron(double vRest,
                      double vReset,
                      double vThreshold,
@@ -30,7 +29,6 @@ LIFNeuron::LIFNeuron(double vRest,
     id = ++id_counter;
 }
 
-// Implementación de stepSimulation
 double LIFNeuron::stepSimulation(double dt, double currentTime)
 {
     timeSinceLastSpike += dt;
@@ -40,7 +38,6 @@ double LIFNeuron::stepSimulation(double dt, double currentTime)
         return V_current;
     }
 
-    // LIF: dV/dt = (-(V - V_rest) + R*I) / (R*C)
     double dV = (-(V_current - V_rest) + R * accumulatedCurrent) / (R * C);
     V_current += dV * dt;
 
@@ -50,7 +47,6 @@ double LIFNeuron::stepSimulation(double dt, double currentTime)
         timeSinceLastSpike = 0.0;
         lastSpikeTime = currentTime;
 
-        // Registrar el spike
         Logger::getInstance().logSpike(id, lastSpikeTime);
     }
 
@@ -103,7 +99,6 @@ const std::vector<std::shared_ptr<ISynapse>>& LIFNeuron::getIncomingSynapses() c
 }
 
 double LIFNeuron::getRecovery() const {
-    // LIFNeuron no tiene una variable de recuperación, retorna 0.0
     return 0.0;
 }
 
@@ -115,4 +110,4 @@ double LIFNeuron::getResetPotential() const {
     return V_reset;
 }
 
-} // namespace BioNeuralNetwork
+}

@@ -12,7 +12,6 @@
 
 namespace BioNeuralNetwork {
 
-// Implementación de addNeuron y addSynapse
 void NetworkManager::addNeuron(std::shared_ptr<INeuron> neuron) {
     neurons.push_back(neuron);
 }
@@ -21,7 +20,6 @@ void NetworkManager::addSynapse(std::shared_ptr<ISynapse> synapse) {
     synapses.push_back(synapse);
 }
 
-// Implementación de createNeuron
 std::shared_ptr<INeuron> NetworkManager::createNeuron(NeuronType type, const std::vector<double>& params) {
     std::shared_ptr<INeuron> neuron;
 
@@ -36,7 +34,6 @@ std::shared_ptr<INeuron> NetworkManager::createNeuron(NeuronType type, const std
                 params[5]  // refractoryTime
             );
         } else {
-            // Valores por defecto si no se proporcionan suficientes parámetros
             neuron = std::make_shared<LIFNeuron>();
         }
     }
@@ -54,7 +51,6 @@ std::shared_ptr<INeuron> NetworkManager::createNeuron(NeuronType type, const std
                 params[8]  // refractoryTime
             );
         } else {
-            // Valores por defecto si no se proporcionan suficientes parámetros
             neuron = std::make_shared<IzhikevichNeuron>();
         }
     }
@@ -66,7 +62,6 @@ std::shared_ptr<INeuron> NetworkManager::createNeuron(NeuronType type, const std
     return neuron;
 }
 
-// Implementación de connectExcitatory
 void NetworkManager::connectExcitatory(std::shared_ptr<INeuron> pre,
                                       std::shared_ptr<INeuron> post,
                                       double weight,
@@ -80,7 +75,6 @@ void NetworkManager::connectExcitatory(std::shared_ptr<INeuron> pre,
     addSynapse(synapse);
 }
 
-// Implementación de connectInhibitory
 void NetworkManager::connectInhibitory(std::shared_ptr<INeuron> pre,
                                       std::shared_ptr<INeuron> post,
                                       double weight,
@@ -94,12 +88,10 @@ void NetworkManager::connectInhibitory(std::shared_ptr<INeuron> pre,
     addSynapse(synapse);
 }
 
-// Implementación de setConnectivityStrategy
 void NetworkManager::setConnectivityStrategy(std::unique_ptr<IConnectivityStrategy> strategy) {
     connectivityStrategy = std::move(strategy);
 }
 
-// Implementación de applyConnectivityStrategy
 void NetworkManager::applyConnectivityStrategy() {
     if (connectivityStrategy) {
         connectivityStrategy->connectNeurons(neurons, *this);
@@ -109,7 +101,6 @@ void NetworkManager::applyConnectivityStrategy() {
     }
 }
 
-// Implementación de runSimulation
 void NetworkManager::runSimulation(double tMax, double dt) {
     double currentTime = 0.0;
     int steps = static_cast<int>(tMax / dt);
@@ -117,12 +108,10 @@ void NetworkManager::runSimulation(double tMax, double dt) {
     for (int step = 0; step < steps; ++step) {
         currentTime = step * dt;
 
-        // Inyectar corriente en cada step
         for (auto &neuron : neurons) {
-            neuron->injectCurrent(10.0); // Puedes parametrizar este valor según tus necesidades
+            neuron->injectCurrent(10.0);
         }
 
-        // 1) Actualizar la dinámica de cada neurona
         for (auto &neuron : neurons) {
             neuron->stepSimulation(dt, currentTime);
 
@@ -140,7 +129,6 @@ void NetworkManager::runSimulation(double tMax, double dt) {
             }
         }
 
-        // 2) Procesar eventos cuyo 'time <= currentTime'
         while (!eventManager.empty() && eventManager.nextEventTime() <= currentTime) {
             SpikeEvent e = eventManager.popEvent();
             auto synapsePtr = e.synapse.lock();
@@ -151,7 +139,6 @@ void NetworkManager::runSimulation(double tMax, double dt) {
         }
     }
 
-    // Exportar logs al finalizar la simulación
     try {
         Logger::getInstance().exportSpikesToCSV("output_logs/spikes.csv");
         Logger::getInstance().exportWeightChangesToCSV("output_logs/weight_changes.csv");
@@ -163,7 +150,6 @@ void NetworkManager::runSimulation(double tMax, double dt) {
     }
 }
 
-// Implementación de createNetwork
 void NetworkManager::createNetwork(const NetworkConfig& config) {
     // 1. Crear neuronas excitatorias
     int numExcitatory = static_cast<int>(config.totalNeurons * config.excitatoryRatio);
@@ -179,7 +165,6 @@ void NetworkManager::createNetwork(const NetworkConfig& config) {
                      {0.1, 0.2, -65.0, 2.0, 30.0, -65.0, 1.0, 1.0, 2.0});
     }
 
-    // 2. Aplicar estrategia de conectividad
     if (config.connectivityStrategy == "Random") {
         // Conectividad aleatoria excitatoria
         auto randomStrategy = std::make_unique<RandomConnectivityStrategy>(
@@ -190,7 +175,6 @@ void NetworkManager::createNetwork(const NetworkConfig& config) {
         setConnectivityStrategy(std::move(randomStrategy));
         applyConnectivityStrategy();
 
-        // Conectividad aleatoria inhibitoria
         auto randomStrategyInh = std::make_unique<RandomConnectivityStrategy>(
             config.inhibitoryConnectivity.connectionProbability,
             config.inhibitoryConnectivity.defaultWeight,
@@ -200,24 +184,21 @@ void NetworkManager::createNetwork(const NetworkConfig& config) {
         applyConnectivityStrategy();
     }
     else if (config.connectivityStrategy == "SmallWorld") {
-        // Conectividad Small World excitatoria
         auto smallWorldStrategy = std::make_unique<SmallWorldConnectivityStrategy>(
-            0.1, // Probabilidad de reconexión
-            10   // Número de conexiones por neurona
+            0.1,
+            10
         );
         setConnectivityStrategy(std::move(smallWorldStrategy));
         applyConnectivityStrategy();
 
-        // Conectividad Small World inhibitoria
         auto smallWorldStrategyInh = std::make_unique<SmallWorldConnectivityStrategy>(
-            0.1, // Probabilidad de reconexión
-            10   // Número de conexiones por neurona
+            0.1,
+            10
         );
         setConnectivityStrategy(std::move(smallWorldStrategyInh));
         applyConnectivityStrategy();
     }
     else if (config.connectivityStrategy == "ScaleFree") {
-        // Conectividad Scale-Free excitatoria
         int initialNodes = 5;
         int connectionsPerNewNode = 3;
         auto scaleFreeStrategy = std::make_unique<ScaleFreeConnectivityStrategy>(
@@ -227,7 +208,6 @@ void NetworkManager::createNetwork(const NetworkConfig& config) {
         setConnectivityStrategy(std::move(scaleFreeStrategy));
         applyConnectivityStrategy();
 
-        // Conectividad Scale-Free inhibitoria
         auto scaleFreeStrategyInh = std::make_unique<ScaleFreeConnectivityStrategy>(
             initialNodes,
             connectionsPerNewNode
@@ -240,4 +220,4 @@ void NetworkManager::createNetwork(const NetworkConfig& config) {
     }
 }
 
-} // namespace BioNeuralNetwork
+}

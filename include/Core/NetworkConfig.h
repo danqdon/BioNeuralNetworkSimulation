@@ -18,9 +18,8 @@ namespace BioNeuralNetwork {
         ConnectivityParameters excitatoryConnectivity;
         ConnectivityParameters inhibitoryConnectivity;
         std::string connectivityStrategy; // Opciones: "Random", "SmallWorld", "ScaleFree"
-        // Puedes añadir más parámetros según tus necesidades
     };
 
-} // namespace BioNeuralNetwork
+}
 
 #endif // NETWORKCONFIG_H

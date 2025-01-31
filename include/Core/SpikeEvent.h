@@ -22,6 +22,6 @@ namespace BioNeuralNetwork {
             : time(t), preNeuron(pre), synapse(s) {}
     };
 
-} // namespace BioNeuralNetwork
+}
 
 #endif // SPIKEEVENT_H

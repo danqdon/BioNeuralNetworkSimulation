@@ -32,6 +32,6 @@ namespace BioNeuralNetwork {
         std::uniform_real_distribution<> dist;
     };
 
-} // namespace BioNeuralNetwork
+}
 
 #endif // RANDOMCONNECTIVITYSTRATEGY_H

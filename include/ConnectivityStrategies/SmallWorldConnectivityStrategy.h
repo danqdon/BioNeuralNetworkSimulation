@@ -28,6 +28,6 @@ namespace BioNeuralNetwork {
         std::uniform_real_distribution<> dist;
     };
 
-} // namespace BioNeuralNetwork
+}
 
 #endif // SMALLWORLDCONNECTIVITYSTRATEGY_H

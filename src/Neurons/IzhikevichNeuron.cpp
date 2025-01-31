@@ -7,7 +7,6 @@
 
 namespace BioNeuralNetwork {
 
-// Inicializar el contador estático
 int IzhikevichNeuron::id_counter = 0;
 
 IzhikevichNeuron::IzhikevichNeuron(double a_param,
@@ -54,14 +53,12 @@ double IzhikevichNeuron::stepSimulation(double dt, double currentTime)
             continue;
         }
 
-        // Ecuaciones de Izhikevich (Euler simple)
         double dV = (0.04 * V * V + 5.0 * V + 140.0 - u + R * accumulatedCurrent) * actualSubdt;
         V += dV;
 
         double du = a * (b * V - u) * actualSubdt;
         u += du;
 
-        // Revisión de disparo
         if (V >= V_threshold) {
             fired = true;
             V = V_reset;
@@ -135,4 +132,4 @@ double IzhikevichNeuron::getResetPotential() const {
     return V_reset;
 }
 
-} // namespace BioNeuralNetwork
+}

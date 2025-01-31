@@ -55,6 +55,6 @@ namespace BioNeuralNetwork {
         double max_weight;
     };
 
-} // namespace BioNeuralNetwork
+}
 
 #endif // EXCITATORYSYNAPSE_H

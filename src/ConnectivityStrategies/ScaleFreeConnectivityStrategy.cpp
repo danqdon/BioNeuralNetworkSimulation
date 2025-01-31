@@ -16,7 +16,7 @@ int ScaleFreeConnectivityStrategy::selectPreferentially(const std::vector<int>& 
             return static_cast<int>(i);
         }
     }
-    return static_cast<int>(degree.size() - 1); // Fallback
+    return static_cast<int>(degree.size() - 1);
 }
 
 void ScaleFreeConnectivityStrategy::connectNeurons(std::vector<std::shared_ptr<INeuron>>& neurons, NetworkManager& manager) {
@@ -30,11 +30,10 @@ void ScaleFreeConnectivityStrategy::connectNeurons(std::vector<std::shared_ptr<I
     for (int i = 0; i < m_initialNodes; ++i) {
         for (int j = i + 1; j < m_initialNodes; ++j) {
             manager.connectExcitatory(neurons[i], neurons[j]);
-            manager.connectExcitatory(neurons[j], neurons[i]); // Bidireccional
+            manager.connectExcitatory(neurons[j], neurons[i]);
         }
     }
 
-    // Mantener un vector que representa el "grado" de cada nodo para el algoritmo de preferencia
     std::vector<int> degree(numNeurons, 0);
     for (int i = 0; i < m_initialNodes; ++i) {
         degree[i] = m_initialNodes - 1;
@@ -43,12 +42,11 @@ void ScaleFreeConnectivityStrategy::connectNeurons(std::vector<std::shared_ptr<I
     for (int i = m_initialNodes; i < numNeurons; ++i) {
         std::vector<int> possibleTargets;
         for (int j = 0; j < i; ++j) {
-            if (neurons[j] != neurons[i]) { // Evitar auto-conexiones
+            if (neurons[j] != neurons[i]) {
                 possibleTargets.push_back(j);
             }
         }
 
-        // Seleccionar 'm_connectionsPerNewNode' conexiones preferenciales
         int connectionsMade = 0;
         while (connectionsMade < m_connectionsPerNewNode && !possibleTargets.empty()) {
             int totalDegree = 0;
@@ -56,24 +54,22 @@ void ScaleFreeConnectivityStrategy::connectNeurons(std::vector<std::shared_ptr<I
                 totalDegree += degree[j];
             }
 
-            if (totalDegree == 0) break; // Evitar división por cero
+            if (totalDegree == 0) break;
 
             int selected = selectPreferentially(degree, totalDegree);
             if (selected >= possibleTargets.size()) selected = static_cast<int>(possibleTargets.size() - 1);
 
             int target = possibleTargets[selected];
             manager.connectExcitatory(neurons[i], neurons[target]);
-            manager.connectExcitatory(neurons[target], neurons[i]); // Bidireccional
+            manager.connectExcitatory(neurons[target], neurons[i]);
 
-            // Actualizar grados
             degree[i]++;
             degree[target]++;
 
-            // Remover el target seleccionado para evitar duplicados
             possibleTargets.erase(possibleTargets.begin() + selected);
             connectionsMade++;
         }
     }
 }
 
-} // namespace BioNeuralNetwork
+}

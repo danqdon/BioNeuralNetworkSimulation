@@ -71,6 +71,6 @@ private:
     std::vector<std::shared_ptr<ISynapse>> outgoingSynapses;
 };
 
-} // namespace BioNeuralNetwork
+}
 
 #endif // IZHIKEVICHNEURON_H

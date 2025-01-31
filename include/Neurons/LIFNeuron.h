@@ -64,6 +64,6 @@ namespace BioNeuralNetwork {
         std::vector<std::shared_ptr<ISynapse>> outgoingSynapses;
     };
 
-} // namespace BioNeuralNetwork
+}
 
 #endif // LIFNEURON_H

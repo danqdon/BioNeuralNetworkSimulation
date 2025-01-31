@@ -5,8 +5,6 @@
 
 namespace BioNeuralNetwork {
 
-// Implementación de métodos de Logger
-
 void Logger::logSpike(int neuronID, double time) {
     std::lock_guard<std::mutex> lock(mtx);
     spikeRecords.emplace_back(SpikeRecord{neuronID, time});
@@ -101,4 +99,4 @@ void Logger::setRealTimeLogging(bool enable) {
     realTimeLogging = enable;
 }
 
-} // namespace BioNeuralNetwork
+}

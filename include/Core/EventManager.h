@@ -13,17 +13,15 @@ namespace BioNeuralNetwork {
      */
     class EventManager {
     public:
-        // Añade un nuevo evento a la cola
         void pushEvent(const SpikeEvent &event) {
             eventQueue.push(event);
         }
 
-        // Verifica si la cola de eventos está vacía
         bool empty() const {
             return eventQueue.empty();
         }
 
-        // Obtiene y elimina el siguiente evento cronológicamente
+
         SpikeEvent popEvent() {
             if (eventQueue.empty()) {
                 throw std::runtime_error("No hay eventos en la cola.");
@@ -33,7 +31,6 @@ namespace BioNeuralNetwork {
             return e;
         }
 
-        // Devuelve el tiempo del próximo evento (o un valor muy grande si no hay eventos)
         double nextEventTime() const {
             if (eventQueue.empty()) {
                 return 1e20; // Indica que no hay eventos pendientes
@@ -42,7 +39,6 @@ namespace BioNeuralNetwork {
         }
 
     private:
-        // Comparador para la cola de prioridad: eventos con menor 'time' tienen mayor prioridad
         struct CompareEvent {
             bool operator()(const SpikeEvent &e1, const SpikeEvent &e2) {
                 return e1.time > e2.time;
@@ -52,6 +48,6 @@ namespace BioNeuralNetwork {
         std::priority_queue<SpikeEvent, std::vector<SpikeEvent>, CompareEvent> eventQueue;
     };
 
-} // namespace BioNeuralNetwork
+}
 
 #endif // EVENTMANAGER_H

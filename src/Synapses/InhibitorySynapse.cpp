@@ -35,7 +35,6 @@ InhibitorySynapse::InhibitorySynapse(std::shared_ptr<INeuron> pre,
 void InhibitorySynapse::deliverSpikeFromPre(const std::shared_ptr<INeuron>& pre, double eventTime)
 {
     if (pre == pre_neuron) {
-        // Inyectar corriente inhibidora (negativa)
         post_neuron->injectCurrent(-weight);
 
         // STDP
@@ -84,12 +83,12 @@ void InhibitorySynapse::adjustWeight(double delta_t, double eventTime) // Añadi
         weight = max_weight;
     }
 
-    // Registrar el cambio de peso si hubo modificación significativa
-    if (std::abs(weight - oldWeight) > 1e-6) { // Evitar registros innecesarios
+
+    if (std::abs(weight - oldWeight) > 1e-6) {
         std::ostringstream synID;
         synID << pre_neuron->getID() << "_" << post_neuron->getID();
         Logger::getInstance().logWeightChange(synID.str(), eventTime, oldWeight, weight);
     }
 }
 
-} // namespace BioNeuralNetwork
+}

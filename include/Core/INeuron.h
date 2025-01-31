@@ -15,7 +15,6 @@ namespace BioNeuralNetwork {
     public:
         virtual ~INeuron() = default;
 
-        // Funciones puramente virtuales que deben ser implementadas por clases derivadas
         virtual double stepSimulation(double dt, double currentTime) = 0;
 
         virtual double getPotential() const = 0;
@@ -39,6 +38,6 @@ namespace BioNeuralNetwork {
         virtual double getResetPotential() const = 0;
     };
 
-} // namespace BioNeuralNetwork
+}
 
 #endif // INEURON_H

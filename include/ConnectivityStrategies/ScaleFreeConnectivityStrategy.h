@@ -2,7 +2,7 @@
 #ifndef SCALEFREECONNECTIVITYSTRATEGY_H
 #define SCALEFREECONNECTIVITYSTRATEGY_H
 
-#include "IConnectivityStrategy.h" // Asegúrate de que esta ruta es correcta
+#include "IConnectivityStrategy.h"
 #include <random>
 #include <vector>
 
@@ -34,6 +34,6 @@ private:
     int selectPreferentially(const std::vector<int>& degree, int totalDegree);
 };
 
-} // namespace BioNeuralNetwork
+}
 
 #endif // SCALEFREECONNECTIVITYSTRATEGY_H
