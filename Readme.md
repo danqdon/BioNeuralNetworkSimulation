@@ -1,130 +1,94 @@
 # BioNeuralNetworkSimulation
 
 Este proyecto implementa una **simulación de redes neuronales bioinspiradas** en C++. Incluye:
-- Diferentes **modelos de neurona** (Integrate-and-Fire y Izhikevich).
+- Diferentes **modelos de neurona** (Integrate-and-Fire e Izhikevich).
 - **Sinapsis excitatorias e inhibitorias** con mecanismos de plasticidad sináptica (STDP).
-- **Estrategias de conectividad** (Aleatoria, Small-World y Scale-Free).
+- **Estrategias de conectividad** (Random, Small-World y Scale-Free), las cuales han sido validadas mediante pruebas unitarias.
 - Un sistema de **logging** que registra spikes y cambios de peso sináptico.
 
-El objetivo es **simular la actividad de una red neuronal** bajo distintos escenarios y configuraciones, grabar la dinámica en archivos de log y, opcionalmente, realizar pruebas unitarias con GoogleTest.
+El objetivo es **simular la actividad de una red neuronal** bajo distintos escenarios y configuraciones, grabar la dinámica en archivos de log y, opcionalmente, ejecutar pruebas unitarias con GoogleTest para verificar el correcto funcionamiento de cada módulo.
 
 ---
 
-## **Estructura de Directorios**
+## Estructura de Directorios
 
 ```
 danqdon-bioneuralnetworksimulation/
 ├── CMakeLists.txt                 # Script principal de CMake
 ├── include/                       # Cabeceras de la librería
-│   ├── ConnectivityStrategies/
-│   ├── Core/
-│   ├── Network/
-│   ├── Neurons/
-│   └── Synapses/
-├── src/                           # Implementaciones de la librería y el main
-│   ├── main.cpp                   # Punto de entrada a la aplicación
-│   ├── ConnectivityStrategies/
-│   ├── Core/
-│   ├── Network/
-│   ├── Neurons/
-│   └── Synapses/
+│   ├── ConnectivityStrategies/    # Interfaces y estrategias de conectividad
+│   ├── Core/                     # Componentes centrales (EventManager, Logger, NetworkConfig, SpikeEvent)
+│   ├── Network/                  # NetworkManager
+│   ├── Neurons/                  # Modelos de neuronas (LIF, Izhikevich)
+│   └── Synapses/                 # Sinapsis excitatorias e inhibitorias
+├── src/                           # Implementaciones en C++ (.cpp) y main.cpp
+│   ├── main.cpp                  # Punto de entrada a la aplicación
+│   ├── ConnectivityStrategies/   # Implementaciones de las estrategias de conectividad
+│   ├── Core/                     # Implementaciones del Logger, etc.
+│   ├── Network/                  # Implementación de NetworkManager
+│   ├── Neurons/                  # Implementaciones de LIFNeuron e IzhikevichNeuron
+│   └── Synapses/                 # Implementaciones de sinapsis (con STDP)
 └── tests/                         # Pruebas unitarias con GoogleTest
-    ├── CMakeLists.txt
-    ├── test_main.cpp
-    ├── test_stdp.cpp
-    ├── Core/
-    ├── Network/
-    ├── Neurons/
-    └── Synapses/
+    ├── CMakeLists.txt            # Configuración de tests
+    ├── test_main.cpp             # Punto de entrada de pruebas
+    ├── test_stdp.cpp             # Tests de plasticidad sináptica
+    ├── Connectivity/            # Tests para las estrategias de conectivida
+    ├── Core/                     # Tests del EventManager
+    ├── Network/                  # Tests del NetworkManager
+    ├── Neurons/                  # Tests para modelos de neuronas
+    └── Synapses/                 # Tests para sinapsis
 ```
 
-- **CMakeLists.txt**: Configuración del proyecto y enlazado de ejecutables.
-- **include/**: Cabeceras de cada módulo:
-    - **ConnectivityStrategies/**: Define interfaces y estrategias de conectividad (`IConnectivityStrategy.h`, etc.).
-    - **Core/**: Componentes centrales de la simulación (EventManager, Logger, configuración, etc.).
-    - **Network/**: Cabecera de `NetworkManager.h`, el gestor principal de la red.
-    - **Neurons/**: Definición de modelos de neuronas (LIF, Izhikevich).
-    - **Synapses/**: Definición de sinapsis excitatorias e inhibitorias.
-- **src/**: Implementaciones en C++ (`.cpp`) de las clases descritas en `include/`.
-    - **main.cpp**: Punto de entrada, configura y ejecuta una simulación de ejemplo.
-    - **ConnectivityStrategies/**: Implementaciones específicas (Random, SmallWorld, ScaleFree).
-    - **Core/**: Implementaciones de logger, etc.
-    - **Network/**: Implementación de `NetworkManager`.
-    - **Neurons/**: Implementaciones de LIF e Izhikevich.
-    - **Synapses**: Implementaciones de sinapsis excitatorias e inhibitorias (con STDP).
-- **tests/**: Pruebas unitarias (GoogleTest) que validan el comportamiento de los distintos módulos.
+- **CMakeLists.txt**: Configuración del proyecto y enlace de la biblioteca principal.
+- **include/**: Contiene las cabeceras de cada módulo (ConnectivityStrategies, Core, Network, Neurons, Synapses).
+- **src/**: Contiene las implementaciones en C++ de cada módulo, así como el archivo principal (`main.cpp`).
+- **tests/**: Contiene las pruebas unitarias (GoogleTest) que validan el comportamiento de los distintos módulos. Se ha añadido una carpeta específica para los tests de las estrategias de conectividad.
 
 ---
 
-## **Componentes Principales**
+## Componentes Principales
 
-### **1. Módulo Core**
-1. **EventManager**
-    - Gestiona eventos de spikes ordenados en el tiempo (cola de prioridad).
-    - Permite programar la llegada de un spike a la neurona post-sináptica.
+### 1. Módulo Core
+- **EventManager**: Gestiona eventos (spikes) en una cola de prioridad, permitiendo programar la llegada de un spike a la neurona post-sináptica.
+- **Logger**: Registra spikes y cambios de peso en vectores internos y permite exportar estos registros a archivos CSV y de texto para análisis posterior.
+- **NetworkConfig**: Encapsula los parámetros de la red (número total de neuronas, proporciones excitatorias/inhibitorias, estrategia de conectividad, etc.).
+- **SpikeEvent**: Estructura que representa un evento de spike, incluyendo la hora y la sinapsis por la que se transmite.
 
-2. **Logger**
-    - Registra spikes y cambios de peso en vectores internos.
-    - Exporta registros a CSV y a un archivo de texto para su posterior análisis.
+### 2. NetworkManager
+Es el núcleo de la simulación. Ofrece métodos para:
+- Crear neuronas de distintos tipos (LIF o Izhikevich).
+- Conectar neuronas con sinapsis excitatorias o inhibitorias (actualizando las listas internas de conexiones).
+- Configurar la red a partir de un objeto `NetworkConfig`, que define los parámetros y la estrategia de conectividad a aplicar.
+- Ejecutar la simulación mediante el método `runSimulation(tMax, dt)`: en cada paso se inyecta corriente, se actualiza la dinámica neuronal y se gestionan los eventos a través del `EventManager`.
+- Exportar los registros de actividad (spikes y cambios de peso).
 
-3. **NetworkConfig**
-    - Encapsula los parámetros de la red neuronal, como:
-        - Número total de neuronas.
-        - Proporciones de excitatorias e inhibitorias.
-        - Tipo de estrategia de conectividad.
-        - Configuración de conexiones excitatorias/inhibitorias (probabilidad, peso, etc.).
+### 3. Módulo Neurons
+Contiene los modelos neuronales:
+- **LIFNeuron (Leaky Integrate-and-Fire)**: Modelo simple que dispara cuando el potencial supera el umbral.
+- **IzhikevichNeuron**: Modelo que permite reproducir distintos patrones de disparo (regular, bursting, fast-spiking) mediante ajustes en sus parámetros.
 
-4. **SpikeEvent**
-    - Estructura simple que indica cuándo y a través de qué sinapsis se disparará un spike.
+### 4. Módulo Synapses
+Implementa sinapsis con STDP:
+- **ExcitatorySynapse**: Inyecta corriente positiva en la neurona post-sináptica y ajusta el peso sináptico según la diferencia temporal entre spikes pre y post.
+- **InhibitorySynapse**: Inyecta corriente negativa y realiza ajustes similares.
 
----
-
-### **2. NetworkManager**
-- Núcleo de la simulación. Ofrece métodos para:
-    1. **Crear neuronas** de distintos tipos (`LIF` o `Izhikevich`).
-    2. **Conectar neuronas** con sinapsis excitatorias o inhibitorias.
-    3. **Configurar la red** a partir de un `NetworkConfig`, que internamente crea la cantidad de neuronas excitatorias e inhibitorias y aplica la estrategia de conectividad seleccionada.
-    4. **`runSimulation(tMax, dt)`**:
-        - Itera en pasos de tiempo (por ejemplo, 1000 ms con dt=1).
-        - Inyecta corriente en cada paso.
-        - Actualiza la dinámica neuronal.
-        - Gestiona llegada de spikes a través de `EventManager`.
-    5. **Exportar logs** al finalizar (spikes y cambios de peso).
+### 5. Estrategias de Conectividad
+Se implementaron las siguientes estrategias:
+- **RandomConnectivityStrategy**: Conecta neuronas con una probabilidad fija.
+- **SmallWorldConnectivityStrategy**: Genera conexiones de mundo pequeño con parámetros de reconexión.
+- **ScaleFreeConnectivityStrategy**: Utiliza la regla de preferencia de conexión (Barabási-Albert).  
+  Además, se han añadido tests unitarios específicos para verificar que cada estrategia establece las conexiones de forma correcta.
 
 ---
 
-### **3. Módulo Neurons**
-- **LIFNeuron** (Leaky Integrate-and-Fire):
-    - Modelo simple de neurona con umbral y potencial de reposo.
-- **IzhikevichNeuron**:
-    - Modelo más avanzado que maneja diferentes patrones de disparo (regular spiking, bursting, etc.).
-    - El logger registra los spikes cada vez que `V` supera el umbral `V_threshold`.
-
----
-
-### **4. Módulo Synapses**
-- **ExcitatorySynapse / InhibitorySynapse**:
-    - Implementan STDP (plasticidad sináptica):
-        - `adjustWeight(delta_t, eventTime)`: Cambia el peso según la diferencia temporal entre spike pre y spike post.
-    - **Diferencia**: Excitatoria inyecta `+weight` y la Inhibitoria inyecta `-weight`.
-
----
-
-### **5. Estrategias de Conectividad**
-- **RandomConnectivityStrategy**: Conexiones aleatorias con probabilidad fija.
-- **SmallWorldConnectivityStrategy**: Modelo de mundo pequeño con reconexión aleatoria.
-- **ScaleFreeConnectivityStrategy**: Modelo basado en preferencia de conexión (Barabási-Albert).
-
----
-
-## **Ejemplo de Uso**
+## Ejemplo de Uso
 
 ```cpp
 NetworkConfig config;
 config.totalNeurons = 1000;
 config.excitatoryRatio = 0.8;
 config.inhibitoryRatio = 0.2;
-config.connectivityStrategy = "Random";
+config.connectivityStrategy = "Random"; // Opciones: "Random", "SmallWorld", "ScaleFree"
 
 NetworkManager manager;
 manager.createNetwork(config);
@@ -133,57 +97,17 @@ manager.runSimulation(1000.0, 1.0);
 
 ---
 
-## **Pruebas Unitarias**
+## Compilación y Ejecución con CLion
 
-Para ejecutar las pruebas con GoogleTest:
-```bash
-cd build
-ctest
-```
+El proyecto está configurado para compilarse y ejecutarse directamente en **CLion**, aprovechando su integración con CMake. No es necesario utilizar compiladores como GCC, Clang o MinGW de manera directa. CLion detecta el archivo `CMakeLists.txt` y proporciona una interfaz gráfica para compilar y ejecutar el proyecto, así como para ejecutar las pruebas unitarias mediante CTest.
 
 ---
 
-## **Cómo Compilar**
+## Conclusiones
 
-1. **Requisitos**:
-    - CMake >= 3.10
-    - C++17
-    - (Opcional) GoogleTest para las pruebas.
+El proyecto **BioNeuralNetworkSimulation** ejemplifica una arquitectura modular y extensible para la simulación de redes neuronales, combinando:
+- **Modelos de neurona** (LIF e Izhikevich).
+- **Plasticidad sináptica** (STDP).
+- **Estrategias de conectividad** (Random, Small-World y Scale-Free), validadas mediante pruebas unitarias.
+- **Registro de datos** (spikes y cambios de peso) en CSV, facilitando su análisis posterior.
 
-2. **Procedimiento**:
-   ```bash
-   mkdir build
-   cd build
-   cmake ..
-   make -j4
-   ```
-    - Generará el ejecutable `BioNeuralNetwork` que corre la simulación principal.
-
-3. **Ejecución**:
-   ```bash
-   ./BioNeuralNetwork
-   ```
-
----
-
-## **Posibles Extensiones**
-
-1. **Nuevas Estrategias de Conectividad**
-    - Añadir más clases que hereden de `IConnectivityStrategy`.
-
-2. **Integración con Python**
-    - Usar `pybind11` para conectar con Python.
-
-3. **Optimización**
-    - Se puede paralelizar la actualización de neuronas o usar técnicas de GPU.
-
----
-
-## **Conclusiones**
-
-El proyecto **BioNeuralNetworkSimulation** ejemplifica una arquitectura modular y extensible para simular redes neuronales, combinando:
-
-- **Modelos de neurona** (LIF, Izhikevich).
-- **Plasticidad sináptica** con STDP.
-- **Estrategias de conectividad** (Random, Small World, Scale-Free).
-- **Registro de datos** (spikes y cambios de peso) en CSV.
