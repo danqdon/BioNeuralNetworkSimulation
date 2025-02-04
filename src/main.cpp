@@ -70,7 +70,7 @@ int main() {
         std::cerr << "Error al exportar logs: " << e.what() << "\n";
     }
 
-    std::cout << "Fin de la simulación de red neuronal.\n";
+    std::cout << "Fin de la simulacion de red neuronal.\n";
 
     return 0;
 }
