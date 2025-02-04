@@ -16,7 +16,7 @@ namespace BioNeuralNetwork {
     public:
         LIFNeuron(double vRest = -65.0,
                   double vReset = -65.0,
-                  double vThreshold = -50.0,
+                  double vThreshold = -60.0,
                   double rMembrane = 10.0,
                   double cMembrane = 100.0,
                   double refractoryTime = 2.0);
