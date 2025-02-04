@@ -21,9 +21,9 @@ int main() {
 
     NetworkConfig config;
     config.totalNeurons = 1000;
-    config.excitatoryRatio = 0.8; // 80% excitatorias
-    config.inhibitoryRatio = 0.2; // 20% inhibitorias
-    config.connectivityStrategy = "Random"; // Opciones: "Random", "SmallWorld", "ScaleFree"
+    config.excitatoryRatio = 0.8;
+    config.inhibitoryRatio = 0.2;
+    config.connectivityStrategy = "ScaleFree";
 
     config.excitatoryConnectivity.connectionProbability = 0.02;
     config.excitatoryConnectivity.defaultWeight = 0.5;

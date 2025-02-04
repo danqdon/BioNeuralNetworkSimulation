@@ -21,7 +21,7 @@ add_executable(NeuralSimulationTests
         Neurons/test_izhikevich_neuron.cpp
         Neurons/test_lif_neuron.cpp
         Synapses/test_synapse.cpp
-        # Agregar otros archivos de test si existen
+        Connectivity/test_connectivity_strategies.cpp  # NUEVO fichero agregado
 )
 
 # Enlazar el ejecutable de pruebas con GoogleTest y con la biblioteca principal

@@ -73,6 +73,9 @@ void NetworkManager::connectExcitatory(std::shared_ptr<INeuron> pre,
 
     auto synapse = std::make_shared<ExcitatorySynapse>(pre, post, weight, delay);
     addSynapse(synapse);
+
+    pre->addOutgoingSynapse(synapse);
+    post->addIncomingSynapse(synapse);
 }
 
 void NetworkManager::connectInhibitory(std::shared_ptr<INeuron> pre,
@@ -86,6 +89,9 @@ void NetworkManager::connectInhibitory(std::shared_ptr<INeuron> pre,
 
     auto synapse = std::make_shared<InhibitorySynapse>(pre, post, weight, delay);
     addSynapse(synapse);
+
+    pre->addOutgoingSynapse(synapse);
+    post->addIncomingSynapse(synapse);
 }
 
 void NetworkManager::setConnectivityStrategy(std::unique_ptr<IConnectivityStrategy> strategy) {
